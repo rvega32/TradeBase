@@ -36,6 +36,14 @@ app.get('/home.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'frontend', 'home.html'));
 });
 
+// Get current logged-in user info (for frontend)
+app.get('/whoami', (req, res) => {
+  if (!req.session.user) {
+    return res.status(401).json({ error: 'Not logged in' });
+  }
+  res.json({ username: req.session.user.username, fullName: req.session.user.fullName });
+});
+
 // In-memory users and services
 const users = [];
 const services = [];
@@ -120,6 +128,7 @@ app.post('/services', (req, res) => {
 
 // Admin-only delete (you)
 app.delete('/admin/delete-post', (req, res) => {
+  if (!req.session.user) return res.status(401).json({ error: 'Not logged in' });
   const { username } = req.session.user;
   if (username !== 'RicardoVegaJr07102005*') {
     return res.status(403).json({ error: 'Only admin can use this route.' });
@@ -138,6 +147,7 @@ app.delete('/admin/delete-post', (req, res) => {
 
 // User deletes own post
 app.delete('/services/delete', (req, res) => {
+  if (!req.session.user) return res.status(401).json({ error: 'Not logged in' });
   const { username } = req.session.user;
   const { name } = req.body;
 
