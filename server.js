@@ -114,6 +114,43 @@ app.post('/services', (req, res) => {
   res.status(201).json({ message: 'Service posted' });
 });
 
+// ======================
+// 🗑 DELETE POST ROUTES
+// ======================
+
+// Admin-only delete (you)
+app.delete('/admin/delete-post', (req, res) => {
+  const { username } = req.session.user;
+  if (username !== 'RicardoVegaJr07102005*') {
+    return res.status(403).json({ error: 'Only admin can use this route.' });
+  }
+
+  const { name, provider } = req.body;
+  const index = services.findIndex(s => s.name === name && s.provider === provider);
+  if (index === -1) {
+    return res.status(404).json({ error: 'Service not found.' });
+  }
+
+  services.splice(index, 1);
+  console.log(`Admin deleted service "${name}" by ${provider}`);
+  res.json({ message: 'Service deleted by admin.' });
+});
+
+// User deletes own post
+app.delete('/services/delete', (req, res) => {
+  const { username } = req.session.user;
+  const { name } = req.body;
+
+  const index = services.findIndex(s => s.name === name && s.provider === username);
+  if (index === -1) {
+    return res.status(404).json({ error: 'Service not found or not owned by user.' });
+  }
+
+  services.splice(index, 1);
+  console.log(`User ${username} deleted their service "${name}"`);
+  res.json({ message: 'Service deleted.' });
+});
+
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
 });
