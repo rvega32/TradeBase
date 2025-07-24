@@ -10,12 +10,32 @@
   <div class="brand">TradeBase</div>
   <div class="form-container">
     <h2>Login</h2>
-    <form action="/login" method="POST">
-      <input type="text" name="loginId" placeholder="Username or Email" required />
-      <input type="password" name="password" placeholder="Password" required minlength="6" />
+    <form action="/login" method="POST" id="loginForm" novalidate>
+      <label for="loginId">Username or Email</label>
+      <input type="text" id="loginId" name="loginId" placeholder="Username or Email" required autocomplete="username" />
+      
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" placeholder="Password" required minlength="6" autocomplete="current-password" />
+      
       <button type="submit">Login</button>
     </form>
     <p>Don't have an account? <a href="/">Sign up here</a></p>
   </div>
+
+  <script>
+    // Optional: simple client-side validation with user-friendly alerts
+    document.getElementById('loginForm').addEventListener('submit', (e) => {
+      const loginId = e.target.loginId.value.trim();
+      const password = e.target.password.value.trim();
+
+      if (!loginId) {
+        alert('Please enter your username or email.');
+        e.preventDefault();
+      } else if (password.length < 6) {
+        alert('Password must be at least 6 characters.');
+        e.preventDefault();
+      }
+    });
+  </script>
 </body>
 </html>
