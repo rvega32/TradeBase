@@ -9,7 +9,6 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
-  // Get logged-in username from backend session
   async function getCurrentUser() {
     try {
       const res = await fetch('/whoami');
@@ -77,7 +76,6 @@ document.addEventListener('DOMContentLoaded', () => {
         <p><strong>Provider:</strong> ${service.provider}</p>
       `;
 
-      // Show delete button if admin or owner
       if (currentUser === service.provider || currentUser === adminUsername) {
         const deleteBtn = document.createElement('button');
         deleteBtn.textContent = 'Delete';
@@ -85,7 +83,6 @@ document.addEventListener('DOMContentLoaded', () => {
         deleteBtn.addEventListener('click', async () => {
           if (!confirm('Are you sure you want to delete this post?')) return;
 
-          // Since backend expects name and provider in body for delete, send accordingly
           const delRes = await fetch(currentUser === adminUsername ? '/admin/delete-post' : '/services/delete', {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
