@@ -15,20 +15,16 @@ app.use(session({
   saveUninitialized: true,
 }));
 
-// Serve static files (CSS, JS, etc)
 app.use(express.static(path.join(__dirname, 'frontend')));
 
-// Root route serves signup page
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'frontend', 'signup.html'));
 });
 
-// Login page
 app.get('/login', (req, res) => {
   res.sendFile(path.join(__dirname, 'frontend', 'login.html'));
 });
 
-// Services page (renamed to home.html) - require login
 app.get('/home.html', (req, res) => {
   if (!req.session.user) {
     return res.redirect('/login');
@@ -36,7 +32,6 @@ app.get('/home.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'frontend', 'home.html'));
 });
 
-// Get current logged-in user info (for frontend)
 app.get('/whoami', (req, res) => {
   if (!req.session.user) {
     return res.status(401).json({ error: 'Not logged in' });
@@ -44,11 +39,9 @@ app.get('/whoami', (req, res) => {
   res.json({ username: req.session.user.username, fullName: req.session.user.fullName });
 });
 
-// In-memory users and services
 const users = [];
 const services = [];
 
-// Signup POST
 app.post('/signup', (req, res) => {
   const { fullName, username, email, phone, password } = req.body;
 
@@ -76,7 +69,6 @@ app.post('/signup', (req, res) => {
   res.redirect('/login');
 });
 
-// Login POST
 app.post('/login', (req, res) => {
   const { loginId, password } = req.body;
   if (!loginId || !password) {
@@ -93,14 +85,12 @@ app.post('/login', (req, res) => {
   res.redirect('/home.html');
 });
 
-// Logout route
 app.get('/logout', (req, res) => {
   req.session.destroy(() => {
     res.redirect('/login');
   });
 });
 
-// Get all services (auth required)
 app.get('/services', (req, res) => {
   if (!req.session.user) {
     return res.status(401).json({ error: 'Not logged in' });
@@ -108,7 +98,6 @@ app.get('/services', (req, res) => {
   res.json(services);
 });
 
-// Post new service (auth required)
 app.post('/services', (req, res) => {
   if (!req.session.user) {
     return res.status(401).json({ error: 'Not logged in' });
@@ -122,11 +111,6 @@ app.post('/services', (req, res) => {
   res.status(201).json({ message: 'Service posted' });
 });
 
-// ======================
-// 🗑 DELETE POST ROUTES
-// ======================
-
-// Admin-only delete (you)
 app.delete('/admin/delete-post', (req, res) => {
   if (!req.session.user) return res.status(401).json({ error: 'Not logged in' });
   const { username } = req.session.user;
@@ -145,7 +129,6 @@ app.delete('/admin/delete-post', (req, res) => {
   res.json({ message: 'Service deleted by admin.' });
 });
 
-// User deletes own post
 app.delete('/services/delete', (req, res) => {
   if (!req.session.user) return res.status(401).json({ error: 'Not logged in' });
   const { username } = req.session.user;
